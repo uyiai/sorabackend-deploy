@@ -1,0 +1,108 @@
+# ===========================================
+# Sora Backend - Production Deployment
+# Usage: docker compose up -d
+# Docs:  https://github.com/uyiai/sorabackend-deploy
+# ===========================================
+
+x-django-common: &django-common
+  env_file:
+    - .env
+  environment: &django-env
+    DJANGO_SETTINGS_MODULE: sorabackend.settings_production
+    DEBUG: "False"
+    DATABASE_URL: "postgres://postgres:${POSTGRES_PASSWORD}@db:5432/sorabackend"
+    REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:6379/0"
+  depends_on: &django-depends
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  # ---------- Infrastructure ----------
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sorabackend
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres -d sorabackend
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly no --requirepass "${REDIS_PASSWORD}"
+    healthcheck:
+      test: redis-cli -a "${REDIS_PASSWORD}" ping
+      interval: 5s
+      retries: 10
+
+  # ---------- Backend ----------
+  web:
+    <<: *django-common
+    image: ghcr.io/uyiai/sorabackend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:8000"
+    volumes:
+      - static_volume:/code/static_root
+      - media_volume:/code/media
+    healthcheck:
+      test: curl --fail "http://localhost:8000/health/?token=${HEALTH_CHECK_TOKENS:-}" || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  celery-default:
+    <<: *django-common
+    image: ghcr.io/uyiai/sorabackend:${IMAGE_TAG:-latest}
+    command: >-
+      celery -A sorabackend worker -l INFO -Q celery,billing -c 2 --max-tasks-per-child 200
+    restart: unless-stopped
+    depends_on:
+      <<: *django-depends
+      web:
+        condition: service_started
+
+  celery-creative-studio:
+    <<: *django-common
+    image: ghcr.io/uyiai/sorabackend:${IMAGE_TAG:-latest}
+    command: >-
+      celery -A sorabackend worker -l INFO -Q ${CELERY_MODULE_QUEUES:-creative_studio} -c 1 --max-tasks-per-child 200
+    restart: unless-stopped
+    depends_on:
+      <<: *django-depends
+      web:
+        condition: service_started
+
+  celery-beat:
+    <<: *django-common
+    image: ghcr.io/uyiai/sorabackend:${IMAGE_TAG:-latest}
+    command: >-
+      celery -A sorabackend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: unless-stopped
+    depends_on:
+      <<: *django-depends
+      web:
+        condition: service_started
+
+  # ---------- Frontend ----------
+  frontend:
+    image: ghcr.io/uyiai/sorabackend-frontend:${FRONTEND_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
