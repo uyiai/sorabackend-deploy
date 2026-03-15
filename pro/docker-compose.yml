@@ -55,6 +55,7 @@ services:
     volumes:
       - static_volume:/code/static_root
       - media_volume:/code/media
+      - license_data:/code/data
     healthcheck:
       test: curl --fail "http://localhost:8000/health/?token=${HEALTH_CHECK_TOKENS:-}" || exit 1
       interval: 30s
@@ -68,6 +69,8 @@ services:
     command: >-
       celery -A sorabackend worker -l INFO -Q celery,billing -c 2 --max-tasks-per-child 200
     restart: unless-stopped
+    volumes:
+      - license_data:/code/data
     depends_on:
       <<: *django-depends
       web:
@@ -79,6 +82,8 @@ services:
     command: >-
       celery -A sorabackend worker -l INFO -Q creative_studio -c 1 --max-tasks-per-child 200
     restart: unless-stopped
+    volumes:
+      - license_data:/code/data
     depends_on:
       <<: *django-depends
       web:
@@ -90,6 +95,8 @@ services:
     command: >-
       celery -A sorabackend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: unless-stopped
+    volumes:
+      - license_data:/code/data
     depends_on:
       <<: *django-depends
       web:
@@ -108,3 +115,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  license_data:
