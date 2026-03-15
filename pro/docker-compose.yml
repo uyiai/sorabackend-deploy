@@ -55,7 +55,6 @@ services:
     volumes:
       - static_volume:/code/static_root
       - media_volume:/code/media
-      - ./keys:/code/keys:ro
     healthcheck:
       test: curl --fail "http://localhost:8000/health/?token=${HEALTH_CHECK_TOKENS:-}" || exit 1
       interval: 30s
