@@ -20,22 +20,14 @@ docker compose up -d
 docker compose ps
 ```
 
-## Build Profiles
+## Images
 
-Three pre-built image profiles are available:
+All services use the `latest` tag from GHCR, automatically pulling the most recent stable build.
 
-| Profile | Image Tag | Modules |
-|---------|-----------|---------|
-| **base** | `v1.9.0-base` | conversation, billing |
-| **pro** | `v1.9.0-pro` | base + video, image, music, creative_studio, agents, sms, support |
-| **enterprise** | `v1.9.0-enterprise` | pro + referral, wechat |
-
-Set your desired profile in `.env`:
-
-```bash
-IMAGE_TAG=v1.9.0-pro
-FRONTEND_IMAGE_TAG=v1.9.0
-```
+| Image | Description |
+|-------|-------------|
+| `ghcr.io/uyiai/sorabackend:latest` | Backend (Django API + Celery workers) |
+| `ghcr.io/uyiai/sorabackend-frontend:latest` | Frontend (React + Nginx) |
 
 ## Services
 
@@ -65,7 +57,7 @@ curl "http://localhost:8080/health/?token=YOUR_HEALTH_CHECK_TOKEN"
 ## Updating
 
 ```bash
-# Pull new images
+# Pull latest images
 docker compose pull
 
 # Restart with new images
