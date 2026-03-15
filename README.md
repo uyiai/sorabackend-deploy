@@ -54,15 +54,13 @@ All Base services plus:
 
 ### License (All Editions)
 
-All editions require a valid license key. Configure in `.env`:
+All editions require a valid license key. Set `LICENSE_KEY` in `.env`:
 
 ```bash
 LICENSE_KEY=LK-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
-LICENSE_SERVER_URL=https://config.yoogeo.com
-LICENSE_ENFORCEMENT=warn  # off | log_only | warn | enforce
 ```
 
-Place the `license_public.pem` in the `keys/` directory for signature verification.
+The license server URL and enforcement level are pre-configured in docker-compose.yml. Place `license_public.pem` in the `keys/` directory for signature verification.
 
 ## Health Check
 
