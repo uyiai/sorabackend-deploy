@@ -1,7 +1,8 @@
 # ===========================================
-# Sora Backend - Production Deployment
+# Sora Backend - Pro Edition
+# Modules: conversation, billing + video, image, music,
+#          creative_studio, agents, sms, support
 # Usage: docker compose up -d
-# Docs:  https://github.com/uyiai/sorabackend-deploy
 # ===========================================
 
 x-django-common: &django-common
@@ -46,7 +47,7 @@ services:
   # ---------- Backend ----------
   web:
     <<: *django-common
-    image: ghcr.io/uyiai/sorabackend:latest
+    image: ghcr.io/uyiai/sorabackend:latest-pro
     restart: unless-stopped
     ports:
       - "${WEB_PORT:-8080}:8000"
@@ -62,7 +63,7 @@ services:
 
   celery-default:
     <<: *django-common
-    image: ghcr.io/uyiai/sorabackend:latest
+    image: ghcr.io/uyiai/sorabackend:latest-pro
     command: >-
       celery -A sorabackend worker -l INFO -Q celery,billing -c 2 --max-tasks-per-child 200
     restart: unless-stopped
@@ -73,9 +74,9 @@ services:
 
   celery-creative-studio:
     <<: *django-common
-    image: ghcr.io/uyiai/sorabackend:latest
+    image: ghcr.io/uyiai/sorabackend:latest-pro
     command: >-
-      celery -A sorabackend worker -l INFO -Q ${CELERY_MODULE_QUEUES:-creative_studio} -c 1 --max-tasks-per-child 200
+      celery -A sorabackend worker -l INFO -Q creative_studio -c 1 --max-tasks-per-child 200
     restart: unless-stopped
     depends_on:
       <<: *django-depends
@@ -84,7 +85,7 @@ services:
 
   celery-beat:
     <<: *django-common
-    image: ghcr.io/uyiai/sorabackend:latest
+    image: ghcr.io/uyiai/sorabackend:latest-pro
     command: >-
       celery -A sorabackend beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     restart: unless-stopped
