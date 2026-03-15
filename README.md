@@ -52,9 +52,17 @@ All Base services plus:
 |---------|-------------|
 | `celery-creative-studio` | Creative studio task worker |
 
-### Enterprise Only
+### License (All Editions)
 
-Enterprise edition includes license server integration via `LICENSE_KEY`, `LICENSE_SERVER_URL`, and `LICENSE_ENFORCEMENT` environment variables. Place your `license_public.pem` in the `keys/` directory.
+All editions require a valid license key. Configure in `.env`:
+
+```bash
+LICENSE_KEY=LK-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
+LICENSE_SERVER_URL=https://config.yoogeo.com
+LICENSE_ENFORCEMENT=warn  # off | log_only | warn | enforce
+```
+
+Place the `license_public.pem` in the `keys/` directory for signature verification.
 
 ## Health Check
 
