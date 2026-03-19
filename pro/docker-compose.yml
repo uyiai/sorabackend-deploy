@@ -67,7 +67,7 @@ services:
     <<: *django-common
     image: ghcr.io/uyiai/sorabackend:latest-pro
     command: >-
-      celery -A sorabackend worker -l INFO -Q celery,billing -c 2 --max-tasks-per-child 200
+      celery -A sorabackend worker -l INFO -Q celery,billing -c ${CELERY_DEFAULT_CONCURRENCY:-300} --pool threads
     restart: unless-stopped
     volumes:
       - license_data:/code/data
@@ -80,7 +80,7 @@ services:
     <<: *django-common
     image: ghcr.io/uyiai/sorabackend:latest-pro
     command: >-
-      celery -A sorabackend worker -l INFO -Q creative_studio -c 1 --max-tasks-per-child 200
+      celery -A sorabackend worker -l INFO -Q creative_studio -c ${CELERY_STUDIO_CONCURRENCY:-300} --pool threads
     restart: unless-stopped
     volumes:
       - license_data:/code/data
