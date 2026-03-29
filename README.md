@@ -71,16 +71,16 @@ Enable Prometheus + Grafana for metrics collection, dashboards, and alerting:
 docker compose --profile monitoring up -d
 
 # Access
-# Prometheus: http://localhost:9090
-# Grafana:    http://localhost:3001 (default: admin/admin)
+# Prometheus: http://localhost:19090
+# Grafana:    http://localhost:13001 (default: admin/admin)
 ```
 
 Monitoring adds 2 services (~150MB RAM total):
 
 | Service | Port | Purpose |
 |---------|------|---------|
-| Prometheus | 9090 | Metrics collection (scrapes Django every 15s) |
-| Grafana | 3001 | Dashboards + alerting configuration |
+| Prometheus | 19090 | Metrics collection (scrapes Django every 15s) |
+| Grafana | 13001 | Dashboards + alerting configuration |
 
 ### Alerting
 
@@ -96,8 +96,8 @@ The system checks rules every 60 seconds. Without Prometheus, alerting is disabl
 Edit `.env` to change ports and Grafana credentials:
 
 ```bash
-PROMETHEUS_PORT=9090
-GRAFANA_PORT=3001
+PROMETHEUS_PORT=19090
+GRAFANA_PORT=13001
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=your-secure-password
 ```
