@@ -62,6 +62,46 @@ LICENSE_KEY=LK-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
 
 The license server URL and enforcement level are pre-configured in docker-compose.yml. Place `license_public.pem` in the `keys/` directory for signature verification.
 
+## Monitoring (Optional)
+
+Enable Prometheus + Grafana for metrics collection, dashboards, and alerting:
+
+```bash
+# Start with monitoring
+docker compose --profile monitoring up -d
+
+# Access
+# Prometheus: http://localhost:9090
+# Grafana:    http://localhost:3001 (default: admin/admin)
+```
+
+Monitoring adds 2 services (~150MB RAM total):
+
+| Service | Port | Purpose |
+|---------|------|---------|
+| Prometheus | 9090 | Metrics collection (scrapes Django every 15s) |
+| Grafana | 3001 | Dashboards + alerting configuration |
+
+### Alerting
+
+Alert rules and notification channels are configured in the admin panel (Admin > Monitoring). Supported channels:
+
+- Webhook: DingTalk, WeCom, Feishu, Slack, generic
+- Email
+
+The system checks rules every 60 seconds. Without Prometheus, alerting is disabled but all other features work normally.
+
+### Customization
+
+Edit `.env` to change ports and Grafana credentials:
+
+```bash
+PROMETHEUS_PORT=9090
+GRAFANA_PORT=3001
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=your-secure-password
+```
+
 ## Health Check
 
 ```bash
