@@ -72,7 +72,7 @@ docker compose --profile monitoring up -d
 
 # Access
 # Prometheus: http://localhost:19090
-# Grafana:    http://localhost:13001 (default: admin/admin)
+# Grafana:    http://localhost:13001 (default: admin/SoraMonitor2026)
 ```
 
 Monitoring adds 2 services (~150MB RAM total):
@@ -114,6 +114,9 @@ curl http://localhost:8080/up/detail
 ```bash
 docker compose pull
 docker compose up -d
+
+# Clean up old images (recommended after each update)
+docker image prune -f
 ```
 
 ## Data & Backup

@@ -116,6 +116,11 @@ services:
     image: prom/prometheus:v2.53.0
     profiles: [monitoring]
     restart: unless-stopped
+    # Fix: Go DNS resolver needs search domain to resolve short service names
+    dns_search:
+      - pro_default
+    dns_opt:
+      - ndots:1
     volumes:
       - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -131,7 +136,7 @@ services:
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
-      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-SoraMonitor2026}"
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - grafana_data:/var/lib/grafana
