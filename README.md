@@ -43,6 +43,8 @@ docker compose ps
 | `redis` | Redis 7 | - |
 | `celery-default` | Background task worker | - |
 | `celery-beat` | Periodic task scheduler | - |
+| `prometheus` | Metrics collection | 19090 |
+| `grafana` | Dashboards + alerting | 13001 |
 
 ### Pro & Enterprise Editions
 
@@ -62,25 +64,14 @@ LICENSE_KEY=LK-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
 
 The license server URL and enforcement level are pre-configured in docker-compose.yml. Place `license_public.pem` in the `keys/` directory for signature verification.
 
-## Monitoring (Optional)
+## Monitoring
 
-Enable Prometheus + Grafana for metrics collection, dashboards, and alerting:
+Prometheus + Grafana are included by default for metrics, dashboards, and alerting:
 
 ```bash
-# Start with monitoring
-docker compose --profile monitoring up -d
-
-# Access
 # Prometheus: http://localhost:19090
 # Grafana:    http://localhost:13001 (default: admin/SoraMonitor2026)
 ```
-
-Monitoring adds 2 services (~150MB RAM total):
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| Prometheus | 19090 | Metrics collection (scrapes Django every 15s) |
-| Grafana | 13001 | Dashboards + alerting configuration |
 
 ### Alerting
 

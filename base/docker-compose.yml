@@ -97,10 +97,9 @@ services:
     depends_on:
       - web
 
-  # ---------- Monitoring (optional: --profile monitoring) ----------
+  # ---------- Monitoring ----------
   prometheus:
     image: prom/prometheus:v2.53.0
-    profiles: [monitoring]
     restart: unless-stopped
     # Fix: Go DNS resolver needs search domain to resolve short service names
     dns_search:
@@ -118,7 +117,6 @@ services:
 
   grafana:
     image: grafana/grafana:11.1.0
-    profiles: [monitoring]
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
